@@ -1,0 +1,41 @@
+﻿@using WPIntServiceController.Models;
+@model GetInfoResponse
+@{
+    ViewBag.Title = "Index";
+}
+
+<div>
+    <h2>Список задач</h2>
+    <div class="functional-buttom">
+        @using (Ajax.BeginForm("SortTaskList", new AjaxOptions { UpdateTargetId = "table" }))
+        {
+            <div class="dropdown">
+                <button type="button" class="btn btn-primary dropdown-toggle" data-toggle="dropdown">
+                    Режимы сортировки
+                    <span class="caret"></span>
+                </button>
+                <div class="dropdown-menu">
+                    @Html.RadioButton("typeSort", "byName", true)
+                    <span>По названию задачи</span> <br />
+                    @Html.RadioButton("typeSort", "byTime")
+                    <span>По времени</span>
+                </div>
+                <button class="btn btn-primary btn-sort">Сортировать</button>
+            </div>
+        }
+    </div>
+
+    @using (Ajax.BeginForm("FilterByTaskName", new AjaxOptions { UpdateTargetId = "table" }))
+    {
+        <input type="text" name="schedulerName" />
+        <button class="btn btn-primary">Фильтровать</button>
+    }
+
+    <div id="table">
+        @Html.Partial("TableView", Model)
+    </div>
+
+</div>
+
+
+

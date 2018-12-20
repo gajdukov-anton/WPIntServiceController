@@ -1,0 +1,23 @@
+﻿@model Dictionary<string, long>
+<table class="table">
+    <thead>
+        <tr><th>Название задачи</th><th>Время в мс</th></tr>
+    </thead>
+    <tbody>
+        @foreach (var item in Model.Keys.ToArray())
+        {
+            <tr>
+                <td>@item</td>
+                <td>
+                    <div id="task-time">@Html.Partial("TaskTimeView", @Model[item])</div>
+                </td>
+                <td>
+                    @using (Ajax.BeginForm("ResetStatisticsTime", "Statistics", new AjaxOptions { UpdateTargetId = "task-time" }))
+                    {
+                        <button class="btn btn-primary btn-action" name="taskName" value=@item>Сбросить время</button>
+                    }
+                </td>
+            </tr>
+        }
+    </tbody>
+</table>

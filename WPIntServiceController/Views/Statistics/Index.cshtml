@@ -1,0 +1,29 @@
+﻿@model Dictionary<string, long>
+@{
+    ViewBag.Title = "Index";
+}
+
+<div>
+    <h2>Статистика</h2>
+    <div class="functional-buttom">
+        @using (Ajax.BeginForm("SortStatistics", new AjaxOptions { UpdateTargetId = "table" }))
+        {
+            <div class="dropdown">
+                <button type="button" class="btn btn-primary dropdown-toggle" data-toggle="dropdown">
+                    Режимы сортировки
+                    <span class="caret"></span>
+                </button>
+                <div class="dropdown-menu">
+                    @Html.RadioButton("typeSort", "byName", true)
+                    <span>По названию задачи</span> <br />
+                    @Html.RadioButton("typeSort", "byTime")
+                    <span>По времени</span>
+                </div>
+                <button class="btn btn-primary btn-sort">Сортировать</button>
+            </div>
+        }
+    </div>
+    <div id="table">
+        @Html.Partial("TableView", Model)
+    </div>
+</div>
