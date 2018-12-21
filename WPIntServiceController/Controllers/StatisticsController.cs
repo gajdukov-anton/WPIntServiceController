@@ -33,13 +33,10 @@ namespace WPIntServiceController.Controllers
         {
             ViewBag.Title = "Home Page";
             // SchedulerManager schedulerManager = new SchedulerManager(getServiceName());
-            _schedulerManager.SetWPIntService(getServiceName());
+            _schedulerManager.SetWPIntService(getCurrentService());
             Dictionary<string, long> statistics = _schedulerManager.GetStatistics();
             ViewBag.Services = _wpIntServiceManager.GetServices().Keys.ToList();
-            ViewBag.CurrentService = HttpContext.Request.Cookies["serviceName"].Value;
-
-
-
+            ViewBag.CurrentService = HttpContext.Request.Cookies["service"].Value;
             return View(StatisticSort.SortName(statistics));
         }
 
@@ -47,7 +44,7 @@ namespace WPIntServiceController.Controllers
         public ActionResult ResetStatisticsTime(string taskName)
         {
             //SchedulerManager schedulerManager = new SchedulerManager(getServiceName());
-            _schedulerManager.SetWPIntService(getServiceName());
+            _schedulerManager.SetWPIntService(getCurrentService());
             Dictionary<string, long> statistics = _schedulerManager.GetStatistics();
             statistics[taskName] = 0;
             return PartialView("TaskTimeView", (long) 0);
@@ -57,7 +54,7 @@ namespace WPIntServiceController.Controllers
         public ActionResult SortStatistics(string typeSort)
         {
             // SchedulerManager schedulerManager = new SchedulerManager(getServiceName());
-            _schedulerManager.SetWPIntService(getServiceName());
+            _schedulerManager.SetWPIntService(getCurrentService());
             Dictionary<string, long> statistics = _schedulerManager.GetStatistics();
             switch (typeSort)
             {
@@ -70,18 +67,17 @@ namespace WPIntServiceController.Controllers
             }
         }
 
-        private string getServiceName()
+        private string getCurrentService()
         {
-            //    string serviceName = HttpContext.Request.Cookies["serviceName"].Value;
-            if (HttpContext.Request.Cookies["serviceName"] == null)
+            if (HttpContext.Request.Cookies["service"] == null)
             {
                 string service = _wpIntServiceManager.GetFirstService();
-                HttpContext.Response.Cookies["serviceName"].Value = service;
+                HttpContext.Response.Cookies["service"].Value = _wpIntServiceManager.GetServicesName()[0];
                 return service;
             }
             else
             {
-                return _wpIntServiceManager.GetService(HttpContext.Request.Cookies["serviceName"].Value);
+                return _wpIntServiceManager.GetService(HttpContext.Request.Cookies["service"].Value);
             }
         }
     }

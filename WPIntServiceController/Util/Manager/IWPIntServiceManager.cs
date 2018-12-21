@@ -12,5 +12,6 @@ namespace WPIntServiceController.Util.Manager
         string GetFirstService();
         string GetService(string serviceName);
         Dictionary<string, string> GetServices();
+        List<string> GetServicesName();
     }
 }

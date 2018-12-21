@@ -34,8 +34,8 @@ namespace WPIntServiceController.Controllers
         public ActionResult Index()
         {
             ViewBag.Services = _wpIntServiceManager.GetServices().Keys.ToList();
-            _schedulerManager.SetWPIntService(getServiceName());
-            ViewBag.CurrentService = HttpContext.Request.Cookies["serviceName"].Value;
+            _schedulerManager.SetWPIntService(_wpIntServiceManager.GetService(getServiceName()));
+            ViewBag.CurrentService = HttpContext.Request.Cookies["service"].Value;
             GetInfoResponse infoResponse = _schedulerManager.GetTaskList();
             infoResponse.TasksInfos = TaskListSort.SortByName(infoResponse.TasksInfos);
             return View("Index", infoResponse);
@@ -44,7 +44,7 @@ namespace WPIntServiceController.Controllers
         [HttpPost]
         public string Resume(string taskName)
         {
-            string id = HttpContext.Request.Cookies["serviceName"].Value;
+            string id = HttpContext.Request.Cookies["service"].Value;
             return taskName + "resume" + id;
         }
 
@@ -57,7 +57,8 @@ namespace WPIntServiceController.Controllers
         [HttpPost]
         public ActionResult SortTaskList(string typeSort)
         {
-            _schedulerManager.SetWPIntService(getServiceName());
+
+            _schedulerManager.SetWPIntService(_wpIntServiceManager.GetService(getServiceName()));
             GetInfoResponse infoResponse = _schedulerManager.GetTaskList();
             switch (typeSort)
             {
@@ -75,7 +76,7 @@ namespace WPIntServiceController.Controllers
         [HttpPost]
         public ActionResult FilterByTaskName(string schedulerName)
         {
-            _schedulerManager.SetWPIntService(getServiceName());
+            _schedulerManager.SetWPIntService(_wpIntServiceManager.GetService(getServiceName()));
             GetInfoResponse infoResponse = _schedulerManager.GetTaskList();
             List<TaskHandlerInfo> taskHandlerInfos = new List<TaskHandlerInfo>();
             foreach (TaskHandlerInfo taskHandlerInfo in infoResponse.TasksInfos)
@@ -93,7 +94,7 @@ namespace WPIntServiceController.Controllers
         public ActionResult ChangeWPIntService(string name)
         {
             ViewBag.Services = _wpIntServiceManager.GetServices().Keys.ToList();
-            HttpContext.Response.Cookies["serviceName"].Value = name;
+            HttpContext.Response.Cookies["service"].Value = name;
             _schedulerManager.SetWPIntService(_wpIntServiceManager.GetService(name));
             GetInfoResponse infoResponse = _schedulerManager.GetTaskList();
             infoResponse.TasksInfos = TaskListSort.SortByName(infoResponse.TasksInfos);
@@ -105,15 +106,15 @@ namespace WPIntServiceController.Controllers
 
         private string getServiceName()
         {
-            if (HttpContext.Request.Cookies["serviceName"] == null)
+            if (HttpContext.Request.Cookies["service"] == null)
             {
-                string service = _wpIntServiceManager.GetFirstService();
-                HttpContext.Response.Cookies["serviceName"].Value = service;
+                string service = _wpIntServiceManager.GetServicesName()[0];
+                HttpContext.Response.Cookies["service"].Value = service;
                 return service;
             }
             else
             {
-                return _wpIntServiceManager.GetService(HttpContext.Request.Cookies["serviceName"].Value);
+                return HttpContext.Request.Cookies["service"].Value;
             }
         }
     }

@@ -52,5 +52,10 @@ namespace WPIntServiceController.Util
         {
             return _services;
         }
+
+        public List<string> GetServicesName()
+        {
+            return _services.Keys.ToList();
+        }
     }
 }
