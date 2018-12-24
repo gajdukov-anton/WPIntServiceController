@@ -2,19 +2,20 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Web;
+using WPIntServiceController.Util.Manager;
 
 namespace WPIntServiceController.Util
 {
-    public class WPIntServiceManager
+    public class WPIntServiceManager : IWPIntServiceManager
     {
-        private Dictionary<string, string> services;
+        private Dictionary<string, string> _services;
 
         public WPIntServiceManager()
         {
-            services = getWPIntServicesFromConfigFile();
+            _services = GetWPIntServicesFromConfigFile();
         }
 
-        private Dictionary<string, string> getWPIntServicesFromConfigFile()
+        public Dictionary<string, string> GetWPIntServicesFromConfigFile()
         {
             Dictionary<string, string> newServices = new Dictionary<string, string>();
             newServices.Add("Service1", "http://localhost:49719/api/test");
@@ -23,11 +24,11 @@ namespace WPIntServiceController.Util
             return newServices;
         }
 
-        public string getFirstService()
+        public string GetFirstService()
         {
-            if (services != null)
+            if (_services != null)
             {
-                return services[services.Keys.ToArray()[0]];
+                return _services[_services.Keys.ToArray()[0]];
             }
             else
             {
@@ -35,11 +36,11 @@ namespace WPIntServiceController.Util
             }
         }
 
-        public string getService(string serviceName)
+        public string GetService(string serviceName)
         {
-            if (serviceName != null && services.Keys.Contains(serviceName))
+            if (serviceName != null && _services.Keys.Contains(serviceName))
             {
-                return services[serviceName];
+                return _services[serviceName];
             }
             else
             {
@@ -47,9 +48,14 @@ namespace WPIntServiceController.Util
             }
         }
 
-        public Dictionary<string, string> getServices()
+        public Dictionary<string, string> GetServices()
         {
-            return services;
+            return _services;
+        }
+
+        public List<string> GetServicesName()
+        {
+            return _services.Keys.ToList();
         }
     }
 }

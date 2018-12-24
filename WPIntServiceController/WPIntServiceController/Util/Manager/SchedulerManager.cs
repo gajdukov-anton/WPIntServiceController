@@ -6,26 +6,31 @@ using System.Net;
 using Newtonsoft.Json;
 using System.IO;
 using WPIntServiceController.Models;
+using WPIntServiceController.Util.Manager;
 
 namespace WPIntServiceController.Util
 {
-    public class SchedulerManager
+    public class SchedulerManager : ISchedulerManager
     {
-        private string urlWPIntService;
+        private string _urlWPIntService;
 
-        public SchedulerManager()
+        public SchedulerManager(string urlWPIntService)
         {
+            _urlWPIntService = urlWPIntService;
 
         }
 
-        public GetInfoResponse getTaskList()
+        public SchedulerManager()
         {
-            if (urlWPIntService != null)
+        }
+
+        public GetInfoResponse GetTaskList()
+        {
+            if (_urlWPIntService != null)
             {
-                var request = (HttpWebRequest)WebRequest.Create(urlWPIntService + "/TaskList");
+                var request = (HttpWebRequest)WebRequest.Create(_urlWPIntService + "/TaskList");
                 var response = (HttpWebResponse)request.GetResponse();
-                var responseStr = new StreamReader(response.GetResponseStream()).ReadToEnd();
-                return JsonConvert.DeserializeObject<GetInfoResponse>(responseStr);
+                return JsonConvert.DeserializeObject<GetInfoResponse>(getStrFromResponse(response));
             }
             else
             {
@@ -35,13 +40,12 @@ namespace WPIntServiceController.Util
 
         public bool SuspendTask(string taskName, string schedulerName)
         {
-            if (urlWPIntService != null)
+            if (_urlWPIntService != null)
             {
-                WebRequest request = (HttpWebRequest)WebRequest.Create(urlWPIntService + "/?scheduler=" + taskName + "&task=" + schedulerName);
+                WebRequest request = (HttpWebRequest)WebRequest.Create(_urlWPIntService + "/?scheduler=" + taskName + "&task=" + schedulerName);
                 request.Method = "DELETE";
                 var response = (HttpWebResponse)request.GetResponse();
-                var responseStr = new StreamReader(response.GetResponseStream()).ReadToEnd();
-                return JsonConvert.DeserializeObject<bool>(responseStr);
+                return JsonConvert.DeserializeObject<bool>(getStrFromResponse(response));
             }
             else
             {
@@ -51,13 +55,12 @@ namespace WPIntServiceController.Util
 
         public bool ResumeTask(string taskName, string schedulerName)
         {
-            if (urlWPIntService != null)
+            if (_urlWPIntService != null)
             {
-                WebRequest request = (HttpWebRequest)WebRequest.Create(urlWPIntService + "/?scheduler=" + taskName + "&task=" + schedulerName);
+                WebRequest request = (HttpWebRequest)WebRequest.Create(_urlWPIntService + "/?scheduler=" + taskName + "&task=" + schedulerName);
                 request.Method = "POST";
                 var response = (HttpWebResponse)request.GetResponse();
-                var responseStr = new StreamReader(response.GetResponseStream()).ReadToEnd();
-                return JsonConvert.DeserializeObject<bool>(responseStr);
+                return JsonConvert.DeserializeObject<bool>(getStrFromResponse(response));
             }
             else
             {
@@ -67,24 +70,23 @@ namespace WPIntServiceController.Util
 
         public Dictionary<string, long> GetStatistics()
         {
-            if (urlWPIntService != null)
+            if (_urlWPIntService != null)
             {
-                var request = (HttpWebRequest)WebRequest.Create(urlWPIntService + "/time/");
+                var request = (HttpWebRequest)WebRequest.Create(_urlWPIntService + "/time/");
                 var response = (HttpWebResponse)request.GetResponse();
-                var responseStr = new StreamReader(response.GetResponseStream()).ReadToEnd();
-                return JsonConvert.DeserializeObject<Dictionary<string, long>>(responseStr);
+                return JsonConvert.DeserializeObject<Dictionary<string, long>>(getStrFromResponse(response));
             }
             else
             {
                 return null;
             }
         }
-        
+
         public void ResetStatistics()
         {
-            if (urlWPIntService != null)
+            if (_urlWPIntService != null)
             {
-                var request = (HttpWebRequest)WebRequest.Create(urlWPIntService + "/time/");
+                var request = (HttpWebRequest)WebRequest.Create(_urlWPIntService + "/time/");
                 request.Method = "DELETE";
                 var response = (HttpWebResponse)request.GetResponse();
             }
@@ -92,9 +94,9 @@ namespace WPIntServiceController.Util
 
         public void ResetStatistics(string taskName)
         {
-            if (urlWPIntService != null)
+            if (_urlWPIntService != null)
             {
-                var request = (HttpWebRequest)WebRequest.Create(urlWPIntService + "/time/?task=" + taskName);
+                var request = (HttpWebRequest)WebRequest.Create(_urlWPIntService + "/time/?task=" + taskName);
                 request.Method = "DELETE";
                 var response = (HttpWebResponse)request.GetResponse();
             }
@@ -102,12 +104,24 @@ namespace WPIntServiceController.Util
 
         public void SetWPIntService(string url)
         {
-            urlWPIntService = url;
+            _urlWPIntService = url;
         }
 
         public string GetWPIntService()
         {
-            return urlWPIntService;
+            return _urlWPIntService;
         }
+
+        private string getStrFromResponse(WebResponse response)
+        {
+            string responseStr;
+            using (StreamReader streamReader = new StreamReader(response.GetResponseStream()))
+            {
+                responseStr = streamReader.ReadToEnd();
+                streamReader.Close();
+            }
+            return responseStr;
+        }
+
     }
 }

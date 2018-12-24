@@ -11,14 +11,16 @@
             <div class="dropdown">
                 <button type="button" class="btn btn-primary dropdown-toggle" data-toggle="dropdown">
                     Режимы сортировки
+                    <span class="caret"></span>
                 </button>
                 <div class="dropdown-menu">
-                    @Html.RadioButton("typeSort", "byName", true)
-                    <span>По названию задачи</span> <br />
-                    @Html.RadioButton("typeSort", "byTime")
-                    <span>По времени</span>
+                    <div class="dropdown-item">
+                        <input class="btn btn-primary" type="submit" name="typeSort" id="sort" value="byName" />
+                    </div>
+                    <div class="dropdown-item">
+                        <input class="btn btn-primary" type="submit" name="typeSort" id="sort" value="byTime" />
+                    </div>                   
                 </div>
-                <button class="btn btn-primary btn-sort">Сортировать</button>
             </div>
         }
     </div>

@@ -12,14 +12,18 @@
             <div class="dropdown">
                 <button type="button" class="btn btn-primary dropdown-toggle" data-toggle="dropdown">
                     Режимы сортировки
+                    <span class="caret"></span>
                 </button>
                 <div class="dropdown-menu">
-                    @Html.RadioButton("typeSort", "byName", true)
-                    <span>По названию задачи</span> <br />
-                    @Html.RadioButton("typeSort", "byTime")
-                    <span>По времени</span>
+                    <div class="dropdown-item">
+                        <input class="btn btn-primary" type="submit" name="typeSort" id="sort" value="byName" />
+                    </div>
+                    <div class="dropdown-item">
+                        <input class="btn btn-primary" type="submit" name="typeSort" id="sort" value="byTime" />
+                    </div>
+
                 </div>
-                <button class="btn btn-primary btn-sort">Сортировать</button>
+
             </div>
         }
     </div>
@@ -27,14 +31,13 @@
     @using (Ajax.BeginForm("FilterByTaskName", new AjaxOptions { UpdateTargetId = "table" }))
     {
         <input type="text" name="schedulerName" />
-        <input type="text" name="taskName" />
         <button class="btn btn-primary">Фильтровать</button>
     }
 
     <div id="table">
         @Html.Partial("TableView", Model)
     </div>
-</div>
 
+</div>
 
 

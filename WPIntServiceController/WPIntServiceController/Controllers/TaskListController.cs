@@ -10,18 +10,31 @@ using Newtonsoft.Json;
 using WPIntServiceController.Models;
 using WPIntServiceController.Util.Sort;
 using WPIntServiceController.Util.Manager;
-
+using System.Net.Http.Headers;
+using WPIntServiceController.Util;
+using Ninject.Web.Common;
+using Ninject;
+using System.Web.Routing;
+using System.Configuration;
+using WPIntServiceController.Util.testConfig;
+using WPIntServiceController.Util.WPIntService;
+using System.Web.Configuration;
 
 namespace WPIntServiceController.Controllers
 {
-    public class TaskListController : Controller
+    public class TaskListController :  BaseController
     {
+        public TaskListController(ISchedulerManager schedulerManager, IWPIntServiceManager wPIntServiceManager)
+            :base(schedulerManager, wPIntServiceManager)
+        {
+        }
+
         public ActionResult Index()
         {
-            ViewBag.Schedulers = ManagerCollector.WPIntServiceManager.getServices().Keys.ToList();
-            if (ManagerCollector.SchedulerManager.GetWPIntService() == null)
-                ManagerCollector.SchedulerManager.SetWPIntService(ManagerCollector.WPIntServiceManager.getFirstService());
-            GetInfoResponse infoResponse = ManagerCollector.SchedulerManager.getTaskList();
+            ViewBag.Services = _wpIntServiceManager.GetServices().Keys.ToList();
+            _schedulerManager.SetWPIntService(getCurrentService());
+            ViewBag.CurrentService = HttpContext.Request.Cookies["service"].Value;
+            GetInfoResponse infoResponse = _schedulerManager.GetTaskList();
             infoResponse.TasksInfos = TaskListSort.SortByName(infoResponse.TasksInfos);
             return View("Index", infoResponse);
         }
@@ -29,7 +42,11 @@ namespace WPIntServiceController.Controllers
         [HttpPost]
         public string Resume(string taskName)
         {
-            return taskName + "resume";
+            WPIntServiceConfigSection section = WebConfigurationManager.GetSection("WPIntServicesSection") as WPIntServiceConfigSection;
+         //   StartupFoldersConfigSection section = WebConfigurationManager.GetSection("StartupFolders") as StartupFoldersConfigSection;
+            string id = section.Services[0].Url + section.Services[0].Name + section.Services[0].Port;
+           // string id = section.FolderItems[0].FolderType;
+            return taskName + "resume " + id;
         }
 
         [HttpPost]
@@ -41,8 +58,10 @@ namespace WPIntServiceController.Controllers
         [HttpPost]
         public ActionResult SortTaskList(string typeSort)
         {
-            GetInfoResponse infoResponse = ManagerCollector.SchedulerManager.getTaskList();
-            switch(typeSort)
+
+            _schedulerManager.SetWPIntService(getCurrentService());
+            GetInfoResponse infoResponse = _schedulerManager.GetTaskList();
+            switch (typeSort)
             {
                 case "byName":
                     infoResponse.TasksInfos = TaskListSort.SortByName(infoResponse.TasksInfos);
@@ -56,23 +75,15 @@ namespace WPIntServiceController.Controllers
         }
 
         [HttpPost]
-        public ActionResult FilterByTaskName(string schedulerName, string taskName)
+        public ActionResult FilterByTaskName(string schedulerName)
         {
-            GetInfoResponse infoResponse = ManagerCollector.SchedulerManager.getTaskList();
+            _schedulerManager.SetWPIntService(getCurrentService());
+            GetInfoResponse infoResponse = _schedulerManager.GetTaskList();
             List<TaskHandlerInfo> taskHandlerInfos = new List<TaskHandlerInfo>();
-            foreach(TaskHandlerInfo taskHandlerInfo in infoResponse.TasksInfos)
+            foreach (TaskHandlerInfo taskHandlerInfo in infoResponse.TasksInfos)
             {
                 if (taskHandlerInfo.Name.Equals(schedulerName))
                 {
-                    List<TaskInfo> taskInfos = new List<TaskInfo>();
-                    foreach(TaskInfo taskInfo in taskHandlerInfo.TaskInfos)
-                    {
-                        if (taskInfo.Name.Equals(taskName))
-                        {
-                            taskInfos.Add(taskInfo);
-                        }
-                    }
-                    taskHandlerInfo.TaskInfos = taskInfos;
                     taskHandlerInfos.Add(taskHandlerInfo);
                 }
             }
@@ -83,18 +94,13 @@ namespace WPIntServiceController.Controllers
         [HttpPost]
         public ActionResult ChangeWPIntService(string name)
         {
-            ManagerCollector.SchedulerManager.SetWPIntService(ManagerCollector.WPIntServiceManager.getService(name));
-            GetInfoResponse infoResponse = ManagerCollector.SchedulerManager.getTaskList();
-            return Index();
-            /*if (infoResponse != null)
-            {
-                ViewBag.Schedulers = ManagerCollector.WPIntServiceManager.getServices().Keys.ToList();
-                return View("Index", infoResponse);
-            }
-            else
-            {
-                return HttpNotFound();
-            }*/
+            ViewBag.Services = _wpIntServiceManager.GetServices().Keys.ToList();
+            HttpContext.Response.Cookies["service"].Value = name;
+            _schedulerManager.SetWPIntService(_wpIntServiceManager.GetService(name));
+            GetInfoResponse infoResponse = _schedulerManager.GetTaskList();
+            infoResponse.TasksInfos = TaskListSort.SortByName(infoResponse.TasksInfos);
+            ViewBag.CurrentService = name;
+            return View("Index", infoResponse);
         }
     }
 }
