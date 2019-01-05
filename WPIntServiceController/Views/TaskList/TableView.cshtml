@@ -11,11 +11,15 @@
         </tr>
     </thead>
     <tbody>
+        @{
+            int id = 0;
+        }
         @foreach (var task in Model.TasksInfos)
         {
             bool wasDisplayed = false;
             foreach (var taskInfo in task.TaskInfos)
             {
+                id++;
                 <tr>
                     @if (!wasDisplayed)
                     {
@@ -27,22 +31,34 @@
                     <td>@taskInfo.ScheduledTimeFormatted</td>
                     <td>@taskInfo.IsPaused</td>
                     <td>
+                        @{
+                            SchedulerInfo info = new SchedulerInfo();
+                            info.TaskName = taskInfo.Name;
+                            info.SchedulerName = task.Name;
+                        }
                         @if (!taskInfo.IsPaused)
                         {
-                            using (Html.BeginForm("Pause", "TaskList"))
+
+                            using (Ajax.BeginForm("Pause", "TaskList", new AjaxOptions { UpdateTargetId = "table" }))
                             {
-                                <button class="btn btn-primary btn-action" name="taskName" value=@task.Name>Приостановить</button>
+                                @Html.Hidden("TaskName", taskInfo.Name);
+                                @Html.Hidden("SchedulerName", task.Name);
+                                <input type="submit" class="btn btn-primary btn-action" value="Приостановить">
                             }
+
                         }
                         else
                         {
-                            using (Html.BeginForm("Resume", "TaskList"))
+                            using (Ajax.BeginForm("Resume", "TaskList", new AjaxOptions { UpdateTargetId = "table" }))
                             {
-                                <button class="btn btn-primary btn-action" name="taskName" value=@task.Name>Возобновить</button>
+                                @Html.Hidden("TaskName", taskInfo.Name);
+                                @Html.Hidden("SchedulerName", task.Name);
+                                <input type="submit" class="btn btn-primary btn-action" value="Возобновить">
                             }
                         }
                     </td>
                 </tr>
+
             }
         }
     </tbody>

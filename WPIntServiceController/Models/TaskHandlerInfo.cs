@@ -11,7 +11,7 @@ namespace WPIntServiceController.Models
         public int? Count;
         public DateTime? NearTaskScheduledTime;
         public TaskHandlerType Type;
-        public List<TaskInfo> TaskInfos;
+        public List<TaskInfo> TaskInfos = new List<TaskInfo>();
 
         public string GetAllTaskInfo()
         {

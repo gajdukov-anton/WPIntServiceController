@@ -15,7 +15,8 @@ namespace WPIntServiceController.Controllers
             return Json(CreateGetInfoResponse());
         }
 
-        public bool Delete(string taskName, string schedulerName)
+        [HttpDelete]
+        public bool Delete(string scheduler, string schedulerName)
         {
             GetInfoResponse getInfoResponse = CreateGetInfoResponse();
             foreach(TaskHandlerInfo taskHandlerInfo in getInfoResponse.TasksInfos)
@@ -24,7 +25,7 @@ namespace WPIntServiceController.Controllers
                 {
                     foreach(TaskInfo taskInfo in taskHandlerInfo.TaskInfos)
                     {
-                        if (taskInfo.Name.Equals(taskName) && !taskInfo.IsPaused)
+                        if (taskInfo.Name.Equals(scheduler) && !taskInfo.IsPaused)
                         {
                             taskInfo.IsPaused = true;
                             return true;

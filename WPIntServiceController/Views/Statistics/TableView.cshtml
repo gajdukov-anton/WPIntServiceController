@@ -4,15 +4,19 @@
         <tr><th>Название задачи</th><th>Время в мс</th></tr>
     </thead>
     <tbody>
+        @{ 
+            int id = 0;
+        }
         @foreach (var item in Model.Keys.ToArray())
         {
+            id++;
             <tr>
                 <td>@item</td>
                 <td>
-                    <div id="task-time">@Html.Partial("TaskTimeView", @Model[item])</div>
+                    <div id="@id">@Html.Partial("TaskTimeView", @Model[item].ToString())</div>
                 </td>
                 <td>
-                    @using (Ajax.BeginForm("ResetStatisticsTime", "Statistics", new AjaxOptions { UpdateTargetId = "task-time" }))
+                    @using (Ajax.BeginForm("ResetStatisticsTime", "Statistics", new AjaxOptions { UpdateTargetId = id.ToString() }))
                     {
                         <button class="btn btn-primary btn-action" name="taskName" value=@item>Сбросить время</button>
                     }

@@ -2,29 +2,35 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Web;
+using System.Web.Configuration;
 using WPIntServiceController.Util.Manager;
+using WPIntServiceController.Util.WPIntService;
 
 namespace WPIntServiceController.Util
 {
     public class WPIntServiceManager : IWPIntServiceManager
     {
-        private Dictionary<string, string> _services;
+        private Dictionary<string, Uri> _services;
 
         public WPIntServiceManager()
         {
             _services = GetWPIntServicesFromConfigFile();
         }
 
-        public Dictionary<string, string> GetWPIntServicesFromConfigFile()
+        public Dictionary<string, Uri> GetWPIntServicesFromConfigFile()
         {
-            Dictionary<string, string> newServices = new Dictionary<string, string>();
-            newServices.Add("Service1", "http://localhost:49719/api/test");
-            newServices.Add("Service2", "http://localhost:49719/api/test2");
+            Dictionary<string, Uri> newServices = new Dictionary<string, Uri>();
+            WPIntServiceConfigSection section = WebConfigurationManager.GetSection("WPIntServicesSection") as WPIntServiceConfigSection;
+            foreach (WPIntServiceElement item in section.Services )
+            {
+                UriBuilder serviceUri = new UriBuilder(item.Protocol, item.Url, Convert.ToInt32(item.Port));
+                newServices.Add(item.Name, serviceUri.Uri);
+            }
 
             return newServices;
         }
 
-        public string GetFirstService()
+        public Uri GetFirstService()
         {
             if (_services != null)
             {
@@ -36,7 +42,7 @@ namespace WPIntServiceController.Util
             }
         }
 
-        public string GetService(string serviceName)
+        public Uri GetService(string serviceName)
         {
             if (serviceName != null && _services.Keys.Contains(serviceName))
             {
@@ -48,7 +54,7 @@ namespace WPIntServiceController.Util
             }
         }
 
-        public Dictionary<string, string> GetServices()
+        public Dictionary<string, Uri> GetServices()
         {
             return _services;
         }
@@ -57,5 +63,11 @@ namespace WPIntServiceController.Util
         {
             return _services.Keys.ToList();
         }
+
+        bool IsExist(Uri serviceUri)
+        {
+            return _services.
+        }
+
     }
 }

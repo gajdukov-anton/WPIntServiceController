@@ -6,12 +6,13 @@ using System.Threading.Tasks;
 
 namespace WPIntServiceController.Util.Manager
 {
-    interface IWPIntServiceManager
+    public interface IWPIntServiceManager
     {
-        Dictionary<string, string> GetWPIntServicesFromConfigFile();
-        string GetFirstService();
-        string GetService(string serviceName);
-        Dictionary<string, string> GetServices();
+        Dictionary<string, Uri> GetWPIntServicesFromConfigFile();
+        Uri GetFirstService();
+        Uri GetService(string serviceName);
+        Dictionary<string, Uri> GetServices();
         List<string> GetServicesName();
+        bool IsExist(Uri serviceUri);
     }
 }

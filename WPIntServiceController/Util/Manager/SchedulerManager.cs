@@ -7,14 +7,15 @@ using Newtonsoft.Json;
 using System.IO;
 using WPIntServiceController.Models;
 using WPIntServiceController.Util.Manager;
+using System.Web.Configuration;
 
 namespace WPIntServiceController.Util
 {
     public class SchedulerManager : ISchedulerManager
     {
-        private string _urlWPIntService;
+        private Uri _urlWPIntService;
 
-        public SchedulerManager(string urlWPIntService)
+        public SchedulerManager(Uri urlWPIntService)
         {
             _urlWPIntService = urlWPIntService;
 
@@ -28,9 +29,18 @@ namespace WPIntServiceController.Util
         {
             if (_urlWPIntService != null)
             {
-                var request = (HttpWebRequest)WebRequest.Create(_urlWPIntService + "/TaskList");
-                var response = (HttpWebResponse)request.GetResponse();
-                return JsonConvert.DeserializeObject<GetInfoResponse>(getStrFromResponse(response));
+                try
+                {
+                    Uri uri = new Uri(_urlWPIntService + WebConfigurationManager.AppSettings["UrlPrefixForTaskList"]);
+                    //Uri uri = _urlWPIntService;
+                    var request = (HttpWebRequest)WebRequest.Create(uri);
+                    var response = (HttpWebResponse)request.GetResponse();
+                    return JsonConvert.DeserializeObject<GetInfoResponse>(getStrFromResponse(response));
+                }
+                catch
+                {
+                    return null;
+                }
             }
             else
             {
@@ -42,7 +52,8 @@ namespace WPIntServiceController.Util
         {
             if (_urlWPIntService != null)
             {
-                WebRequest request = (HttpWebRequest)WebRequest.Create(_urlWPIntService + "/?scheduler=" + taskName + "&task=" + schedulerName);
+                //WebRequest request = (HttpWebRequest)WebRequest.Create(_urlWPIntService + "api/test/Delete?scheduler=" + taskName + "&task=" + schedulerName);
+                WebRequest request = ( HttpWebRequest ) WebRequest.Create( $"{_urlWPIntService}?scheduler={schedulerName}&task={taskName}" );
                 request.Method = "DELETE";
                 var response = (HttpWebResponse)request.GetResponse();
                 return JsonConvert.DeserializeObject<bool>(getStrFromResponse(response));
@@ -57,7 +68,9 @@ namespace WPIntServiceController.Util
         {
             if (_urlWPIntService != null)
             {
-                WebRequest request = (HttpWebRequest)WebRequest.Create(_urlWPIntService + "/?scheduler=" + taskName + "&task=" + schedulerName);
+                //WebRequest request = (HttpWebRequest)WebRequest.Create(_urlWPIntService + "api/test?scheduler=" + taskName + "&task=" + schedulerName);
+                WebRequest request = (HttpWebRequest)WebRequest.Create( $"{_urlWPIntService}?scheduler={schedulerName}&task={taskName}" );
+                request.ContentLength = 0;
                 request.Method = "POST";
                 var response = (HttpWebResponse)request.GetResponse();
                 return JsonConvert.DeserializeObject<bool>(getStrFromResponse(response));
@@ -72,7 +85,8 @@ namespace WPIntServiceController.Util
         {
             if (_urlWPIntService != null)
             {
-                var request = (HttpWebRequest)WebRequest.Create(_urlWPIntService + "/time/");
+               var request = (HttpWebRequest)WebRequest.Create(_urlWPIntService + "api/test/time/"); 
+               // var request = (HttpWebRequest)WebRequest.Create($"{_urlWPIntService}time/");
                 var response = (HttpWebResponse)request.GetResponse();
                 return JsonConvert.DeserializeObject<Dictionary<string, long>>(getStrFromResponse(response));
             }
@@ -86,7 +100,8 @@ namespace WPIntServiceController.Util
         {
             if (_urlWPIntService != null)
             {
-                var request = (HttpWebRequest)WebRequest.Create(_urlWPIntService + "/time/");
+                //var request = (HttpWebRequest)WebRequest.Create(_urlWPIntService + "api/test/time/");
+                var request = (HttpWebRequest)WebRequest.Create($"{_urlWPIntService}time/");
                 request.Method = "DELETE";
                 var response = (HttpWebResponse)request.GetResponse();
             }
@@ -96,21 +111,33 @@ namespace WPIntServiceController.Util
         {
             if (_urlWPIntService != null)
             {
-                var request = (HttpWebRequest)WebRequest.Create(_urlWPIntService + "/time/?task=" + taskName);
+                var request = (HttpWebRequest)WebRequest.Create(_urlWPIntService + "api/test/time/?task=" + taskName);
+                //var request = (HttpWebRequest)WebRequest.Create($"{_urlWPIntService}time/?task={taskName}");
                 request.Method = "DELETE";
                 var response = (HttpWebResponse)request.GetResponse();
             }
         }
 
-        public void SetWPIntService(string url)
+        public void SetWPIntService(Uri url)
         {
             _urlWPIntService = url;
         }
 
-        public string GetWPIntService()
+        public Uri GetWPIntService()
         {
             return _urlWPIntService;
         }
+
+        /*private Uri createUriForWebRequest(string method, string task, string scheduler)
+        {
+            string strUri = method;
+            if (method.Length != 0 && strUri[strUri.Length] != '/')
+                strUri += "/";
+            if (scheduler.Equals("") && task.Equals(""))
+            {
+                return new Uri(strUri);
+            } else if
+        }*/
 
         private string getStrFromResponse(WebResponse response)
         {
