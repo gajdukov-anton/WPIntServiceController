@@ -20,16 +20,6 @@ namespace WPIntServiceController.Util.WPIntService
             get { return ((string)(base["name"])); }
         }
 
-        [ConfigurationProperty("port", DefaultValue = "", IsKey = false, IsRequired = true)]
-        public string Port
-        {
-            get { return ((string)(base["port"])); }
-        }
 
-        [ConfigurationProperty("protocol", DefaultValue = "", IsKey = false, IsRequired = true)]
-        public string Protocol
-        {
-            get { return ((string)(base["protocol"])); }
-        }
     }
 }

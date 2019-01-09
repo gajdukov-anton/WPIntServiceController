@@ -7,3 +7,20 @@
     }
     return false;
 }
+
+function setChangeToController(Element) {
+    if (Element.value == "") {
+        taskName = "";
+        $.ajax({
+            type: 'POST',
+            url: window.location.pathname + 'taskList/FilterByTaskName',
+            data: taskName,
+            success: function (data) {
+                $('#table').html(data);
+            },
+            error: function (xhr, str) {
+                alert('Возникла ошибка: ' + xhr.responseCode);
+            }
+        });
+    }
+}

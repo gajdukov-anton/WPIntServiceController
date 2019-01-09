@@ -16,5 +16,6 @@ namespace WPIntServiceController.Util.Manager
         void ResetStatistics();
         void ResetStatistics(string taskName);
         void SetWPIntService(Uri url);
+        Uri GetWPIntService();
     }
 }

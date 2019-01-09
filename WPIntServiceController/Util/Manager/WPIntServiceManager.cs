@@ -21,9 +21,9 @@ namespace WPIntServiceController.Util
         {
             Dictionary<string, Uri> newServices = new Dictionary<string, Uri>();
             WPIntServiceConfigSection section = WebConfigurationManager.GetSection("WPIntServicesSection") as WPIntServiceConfigSection;
-            foreach (WPIntServiceElement item in section.Services )
+            foreach (WPIntServiceElement item in section.Services)
             {
-                UriBuilder serviceUri = new UriBuilder(item.Protocol, item.Url, Convert.ToInt32(item.Port));
+                UriBuilder serviceUri = new UriBuilder(item.Url);
                 newServices.Add(item.Name, serviceUri.Uri);
             }
 
@@ -64,9 +64,9 @@ namespace WPIntServiceController.Util
             return _services.Keys.ToList();
         }
 
-        bool IsExist(Uri serviceUri)
+        public string GetServiceName(Uri uri)
         {
-            return _services.
+            return _services.Where(x => x.Value == uri).FirstOrDefault().Key;
         }
 
     }

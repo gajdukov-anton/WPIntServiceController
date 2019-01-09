@@ -20,7 +20,7 @@ namespace WPIntServiceController.Controllers
         {
             ViewBag.Services = _wpIntServiceManager.GetServices().Keys.ToList();
             _schedulerManager.SetWPIntService(getCurrentService());
-            ViewBag.CurrentService = HttpContext.Request.Cookies["service"].Value;
+            ViewBag.CurrentService = _wpIntServiceManager.GetServiceName(_schedulerManager.GetWPIntService());
             GetInfoResponse infoResponse = _schedulerManager.GetTaskList();
             if (infoResponse == null)
             {
@@ -69,32 +69,37 @@ namespace WPIntServiceController.Controllers
             }
         }
 
+       // [Route("/FilterByTaskName")]
         [HttpPost]
         public ActionResult FilterByTaskName(string taskName)
         {
             _schedulerManager.SetWPIntService(getCurrentService());
             GetInfoResponse infoResponse = _schedulerManager.GetTaskList();
-            List<TaskHandlerInfo> taskHandlerInfos = new List<TaskHandlerInfo>();
-            foreach (TaskHandlerInfo taskHandlerInfo in infoResponse.TasksInfos)
+            infoResponse.TasksInfos = TaskListSort.SortByName(infoResponse.TasksInfos);
+            if (taskName != null && taskName != "")
             {
-                TaskHandlerInfo newTaskHandlerInfo = new TaskHandlerInfo();
-                newTaskHandlerInfo.Name = taskHandlerInfo.Name;
-                newTaskHandlerInfo.NearTaskScheduledTime = taskHandlerInfo.NearTaskScheduledTime;
-                newTaskHandlerInfo.Type = taskHandlerInfo.Type;
-                foreach (TaskInfo taskInfo in taskHandlerInfo.TaskInfos)
+                List<TaskHandlerInfo> taskHandlerInfos = new List<TaskHandlerInfo>();
+                foreach (TaskHandlerInfo taskHandlerInfo in infoResponse.TasksInfos)
                 {
-                    if (taskInfo.Name.Contains(taskName))
+                    TaskHandlerInfo newTaskHandlerInfo = new TaskHandlerInfo();
+                    newTaskHandlerInfo.Name = taskHandlerInfo.Name;
+                    newTaskHandlerInfo.NearTaskScheduledTime = taskHandlerInfo.NearTaskScheduledTime;
+                    newTaskHandlerInfo.Type = taskHandlerInfo.Type;
+                    foreach (TaskInfo taskInfo in taskHandlerInfo.TaskInfos)
                     {
-                        newTaskHandlerInfo.TaskInfos.Add(taskInfo);
+                        if (taskInfo.Name.Contains(taskName))
+                        {
+                            newTaskHandlerInfo.TaskInfos.Add(taskInfo);
+                        }
                     }
+                    if (newTaskHandlerInfo.TaskInfos.Count > 0)
+                    {
+                        taskHandlerInfos.Add(newTaskHandlerInfo);
+                    }
+
                 }
-                if (newTaskHandlerInfo.TaskInfos.Count > 0)
-                {
-                    taskHandlerInfos.Add(newTaskHandlerInfo);
-                }
-               
+                infoResponse.TasksInfos = taskHandlerInfos;
             }
-            infoResponse.TasksInfos = taskHandlerInfos;
             return PartialView("TableView", infoResponse);
         }
 
@@ -111,7 +116,8 @@ namespace WPIntServiceController.Controllers
                 return View("Error");
             }
             infoResponse.TasksInfos = TaskListSort.SortByName(infoResponse.TasksInfos);
-            return View("Index", infoResponse);
+            return Redirect("/");
+
         }
     }
 }

@@ -13,6 +13,6 @@ namespace WPIntServiceController.Util.Manager
         Uri GetService(string serviceName);
         Dictionary<string, Uri> GetServices();
         List<string> GetServicesName();
-        bool IsExist(Uri serviceUri);
+        string GetServiceName(Uri uri);
     }
 }

@@ -16,16 +16,16 @@ namespace WPIntServiceController.Controllers
         }
 
         [HttpDelete]
-        public bool Delete(string scheduler, string schedulerName)
+        public bool Delete(string scheduler, string task)
         {
-            GetInfoResponse getInfoResponse = CreateGetInfoResponse();
+           /* GetInfoResponse getInfoResponse = CreateGetInfoResponse();
             foreach(TaskHandlerInfo taskHandlerInfo in getInfoResponse.TasksInfos)
             {
-                if (taskHandlerInfo.Name.Equals(schedulerName))
+                if (taskHandlerInfo.Name.Equals(scheduler))
                 {
                     foreach(TaskInfo taskInfo in taskHandlerInfo.TaskInfos)
                     {
-                        if (taskInfo.Name.Equals(scheduler) && !taskInfo.IsPaused)
+                        if (taskInfo.Name.Equals(task) && !taskInfo.IsPaused)
                         {
                             taskInfo.IsPaused = true;
                             return true;
@@ -33,19 +33,21 @@ namespace WPIntServiceController.Controllers
                     }
                 }
             }
-            return false;
+            return false;*/
+            return true;
         }
 
-        public bool Post(string taskName, string schedulerName)
+        [HttpPost]
+        public bool Post(string scheduler, string task)
         {
-            GetInfoResponse getInfoResponse = CreateGetInfoResponse();
+           /* GetInfoResponse getInfoResponse = CreateGetInfoResponse();
             foreach (TaskHandlerInfo taskHandlerInfo in getInfoResponse.TasksInfos)
             {
-                if (taskHandlerInfo.Name.Equals(schedulerName))
+                if (taskHandlerInfo.Name.Equals(scheduler))
                 {
                     foreach (TaskInfo taskInfo in taskHandlerInfo.TaskInfos)
                     {
-                        if (taskInfo.Name.Equals(taskName) && taskInfo.IsPaused)
+                        if (taskInfo.Name.Equals(task) && taskInfo.IsPaused)
                         {
                             taskInfo.IsPaused = false;
                             return true;
@@ -53,7 +55,9 @@ namespace WPIntServiceController.Controllers
                     }
                 }
             }
-            return false;
+            return false;*/
+            return true;
+
         }
 
         [HttpGet]
@@ -70,7 +74,7 @@ namespace WPIntServiceController.Controllers
         }
 
         [HttpDelete]
-        public void Time(string taskName)
+        public void Time(string task)
         {
 
         }
