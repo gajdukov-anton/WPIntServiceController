@@ -1,7 +1,5 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Web;
 using System.Net;
 using Newtonsoft.Json;
 using System.IO;
@@ -50,10 +48,17 @@ namespace WPIntServiceController.Util
         {
             if (_urlWPIntService != null)
             {
-                WebRequest request = (HttpWebRequest)WebRequest.Create(createUriForWebRequest("", schedulerName, taskName));
-                request.Method = "DELETE";
-                var response = (HttpWebResponse)request.GetResponse();
-                return JsonConvert.DeserializeObject<bool>(getStrFromResponse(response));
+                try
+                {
+                    WebRequest request = (HttpWebRequest)WebRequest.Create(createUriForWebRequest("", schedulerName, taskName));
+                    request.Method = "DELETE";
+                    var response = (HttpWebResponse)request.GetResponse();
+                    return JsonConvert.DeserializeObject<bool>(getStrFromResponse(response));
+                }
+                catch
+                {
+                    return false;
+                }
             }
             else
             {
@@ -65,11 +70,18 @@ namespace WPIntServiceController.Util
         {
             if (_urlWPIntService != null)
             {
-                WebRequest request = (HttpWebRequest)WebRequest.Create(createUriForWebRequest("", schedulerName, taskName));
-                request.ContentLength = 0;
-                request.Method = "POST";
-                var response = (HttpWebResponse)request.GetResponse();
-                return JsonConvert.DeserializeObject<bool>(getStrFromResponse(response));
+                try
+                {
+                    WebRequest request = (HttpWebRequest)WebRequest.Create(createUriForWebRequest("", schedulerName, taskName));
+                    request.ContentLength = 0;
+                    request.Method = "POST";
+                    var response = (HttpWebResponse)request.GetResponse();
+                    return JsonConvert.DeserializeObject<bool>(getStrFromResponse(response));
+                }
+                catch
+                {
+                    return false;
+                }
             }
             else
             {
@@ -81,9 +93,16 @@ namespace WPIntServiceController.Util
         {
             if (_urlWPIntService != null)
             {
-                var request = (HttpWebRequest)WebRequest.Create(createUriForWebRequest(WebConfigurationManager.AppSettings["StatisticsUrlPrefix"], "", ""));
-                var response = (HttpWebResponse)request.GetResponse();
-                return JsonConvert.DeserializeObject<Dictionary<string, long>>(getStrFromResponse(response));
+                try
+                {
+                    var request = (HttpWebRequest)WebRequest.Create(createUriForWebRequest(WebConfigurationManager.AppSettings["StatisticsUrlPrefix"], "", ""));
+                    var response = (HttpWebResponse)request.GetResponse();
+                    return JsonConvert.DeserializeObject<Dictionary<string, long>>(getStrFromResponse(response));
+                }
+                catch
+                {
+                    return null;
+                }
             }
             else
             {
@@ -95,20 +114,32 @@ namespace WPIntServiceController.Util
         {
             if (_urlWPIntService != null)
             {
-                var request = (HttpWebRequest)WebRequest.Create(createUriForWebRequest(WebConfigurationManager.AppSettings["StatisticsUrlPrefix"], "", ""));
-                request.Method = "DELETE";
-                var response = (HttpWebResponse)request.GetResponse();
+                try
+                {
+                    var request = (HttpWebRequest)WebRequest.Create(createUriForWebRequest(WebConfigurationManager.AppSettings["StatisticsUrlPrefix"], "", ""));
+                    request.Method = "DELETE";
+                    var response = (HttpWebResponse)request.GetResponse();
+                }
+                catch
+                { }
             }
         }
 
-        public void ResetStatistics(string taskName)
+        public bool ResetStatistics(string taskName)
         {
             if (_urlWPIntService != null)
             {
-                var request = (HttpWebRequest)WebRequest.Create(createUriForWebRequest(WebConfigurationManager.AppSettings["StatisticsUrlPrefix"], "", taskName));
-                request.Method = "DELETE";
-                var response = (HttpWebResponse)request.GetResponse();
+                try
+                {
+                    var request = (HttpWebRequest)WebRequest.Create(createUriForWebRequest(WebConfigurationManager.AppSettings["StatisticsUrlPrefix"], "", taskName));
+                    request.Method = "DELETE";
+                    var response = (HttpWebResponse)request.GetResponse();
+                    return true;
+                }
+                catch
+                { }
             }
+            return false;
         }
 
         public void SetWPIntService(Uri url)

@@ -8,7 +8,7 @@
     return false;
 }
 
-function setChangeToController(Element) {
+function SetChangeToController(Element) {
     if (Element.value == "") {
         taskName = "";
         $.ajax({

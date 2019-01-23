@@ -1,41 +1,47 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.Linq;
-using System.Web;
 using WPIntServiceController.Models;
 
 namespace WPIntServiceController.Util.Sort
 {
     public class TaskListSort
     {
-        public static List<TaskHandlerInfo> SortByName(List<TaskHandlerInfo> taskHandlerInfos)
+        public static GetInfoResponse SortByName(GetInfoResponse getInfoResponse)
         {
-            foreach (TaskHandlerInfo taskHandlerInfo in taskHandlerInfos)
+            if (getInfoResponse != null)
             {
-                var sortedTaskInfos = from taskInfo in taskHandlerInfo.TaskInfos
-                                      orderby taskInfo.Name
-                                      select taskInfo;
-                taskHandlerInfo.TaskInfos = sortedTaskInfos.ToList();
+                foreach (TaskHandlerInfo taskHandlerInfo in getInfoResponse.TasksInfos)
+                {
+                    var sortedTaskInfos = from taskInfo in taskHandlerInfo.TaskInfos
+                                          orderby taskInfo.Name
+                                          select taskInfo;
+                    taskHandlerInfo.TaskInfos = sortedTaskInfos.ToList();
+                }
+                return getInfoResponse;
             }
-            var sortedTaskHandlerInfos = from taskHandlerInfo in taskHandlerInfos
-                                         orderby taskHandlerInfo.Name
-                                         select taskHandlerInfo;
-            return sortedTaskHandlerInfos.ToList();
+            else
+            {
+                return null;
+            }
         }
 
-        public static List<TaskHandlerInfo> SortByTime(List<TaskHandlerInfo> taskHandlerInfos)
+        public static GetInfoResponse SortByTime(GetInfoResponse getInfoResponse)
         {
-            foreach (TaskHandlerInfo taskHandlerInfo in taskHandlerInfos)
+            if (getInfoResponse != null)
             {
-                var sortedTaskInfos = from taskInfo in taskHandlerInfo.TaskInfos
-                                      orderby taskInfo.ScheduledTimeFormatted
-                                      select taskInfo;
-                taskHandlerInfo.TaskInfos = sortedTaskInfos.ToList();
+                foreach (TaskHandlerInfo taskHandlerInfo in getInfoResponse.TasksInfos)
+                {
+                    var sortedTaskInfos = from taskInfo in taskHandlerInfo.TaskInfos
+                                          orderby taskInfo.ScheduledTimeFormatted
+                                          select taskInfo;
+                    taskHandlerInfo.TaskInfos = sortedTaskInfos.ToList();
+                }
+                return getInfoResponse;
             }
-            var sortedTaskHandlerInfos = from taskHandlerInfo in taskHandlerInfos
-                                         orderby taskHandlerInfo.Name
-                                         select taskHandlerInfo;
-            return sortedTaskHandlerInfos.ToList();
+            else
+            {
+                return null;
+            }
         }
     }
 }

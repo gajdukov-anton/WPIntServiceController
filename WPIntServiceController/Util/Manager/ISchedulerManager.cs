@@ -1,8 +1,5 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using WPIntServiceController.Models;
 
 namespace WPIntServiceController.Util.Manager
@@ -14,7 +11,7 @@ namespace WPIntServiceController.Util.Manager
         bool ResumeTask(string taskName, string schedulerName);
         Dictionary<string, long> GetStatistics();
         void ResetStatistics();
-        void ResetStatistics(string taskName);
+        bool ResetStatistics(string taskName);
         void SetWPIntService(Uri url);
         Uri GetWPIntService();
     }

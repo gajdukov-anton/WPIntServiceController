@@ -1,8 +1,5 @@
 ﻿@using WPIntServiceController.Models;
 @model GetInfoResponse
-@{
-    ViewBag.Title = "Index";
-}
 
 <div>
     <h2>Список задач</h2>
@@ -28,7 +25,7 @@
 
     @using (Ajax.BeginForm("FilterByTaskName", new AjaxOptions { UpdateTargetId = "table" }))
     {
-        <input id="filterInput" type="text" name="taskName" onchange="setChangeToController(this)"/>
+        <input id="filterInput" type="text" name="taskName" onchange="SetChangeToController(this)"/>
         <button class="btn btn-primary">Фильтровать</button>
     }
 
